@@ -1,4 +1,4 @@
-name: Build V3 No-Picker Bypass APK
+name: Build V5 True Wallpaper Engine APK
 
 on:
   push:
@@ -42,9 +42,9 @@ jobs:
               defaultConfig {
                   applicationId "com.enderscope.htmlwallpaper"
                   minSdk 26
-                  targetSdk 34
-                  versionCode 3
-                  versionName "3.0-Bypass"
+                  targetSdk 33
+                  versionCode 5
+                  versionName "5.0-TrueWallpaper"
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -63,42 +63,44 @@ jobs:
               <uses-feature android:glEsVersion="0x00020000" android:required="true" />
               <uses-feature android:name="android.software.live_wallpaper" android:required="false" />
               <uses-permission android:name="android.permission.SET_WALLPAPER" />
-              <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-              <uses-permission android:name="android.permission.WAKE_LOCK" />
+              <uses-permission android:name="android.permission.SET_WALLPAPER_COMPONENT" />
+              <uses-permission android:name="android.permission.BIND_WALLPAPER" />
 
               <application
                   android:allowBackup="true"
-                  android:label="HTML Gyro V3 Bypass"
+                  android:label="HTML Gyro V5"
+                  android:hardwareAccelerated="true"
                   android:supportsRtl="true"
                   android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
-                  <activity android:name=".MainActivity" android:exported="true">
+                  <!-- Main Activity ALSO acts as System LiveWallpaperPicker Replacement! -->
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
+                      <intent-filter>
+                          <action android:name="android.service.wallpaper.CHANGE_LIVE_WALLPAPER" />
+                          <category android:name="android.intent.category.DEFAULT" />
+                      </intent-filter>
+                      <intent-filter>
+                          <action android:name="android.service.wallpaper.LIVE_WALLPAPER_CHOOSER" />
+                          <category android:name="android.intent.category.DEFAULT" />
+                      </intent-filter>
+                      <intent-filter>
+                          <action android:name="android.intent.action.SET_WALLPAPER" />
+                          <category android:name="android.intent.category.DEFAULT" />
+                      </intent-filter>
                   </activity>
 
-                  <activity
-                      android:name=".DirectLockActivity"
-                      android:exported="true"
-                      android:showOnLockScreen="true"
-                      android:turnScreenOn="true"
-                      android:launchMode="singleInstance"
-                      android:excludeFromRecents="true"
-                      android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
-
-                  <service
-                      android:name=".LockGuardService"
-                      android:enabled="true"
-                      android:exported="false" />
-
+                  <!-- FULL Real OpenGL Live Wallpaper Service -->
                   <service
                       android:name=".GyroWallpaperService"
                       android:enabled="true"
                       android:exported="true"
-                      android:label="3D Gyro LockScreen Pro"
+                      android:label="3D Spider-Man Gyro Pro"
                       android:permission="android.permission.BIND_WALLPAPER">
                       <intent-filter>
                           <action android:name="android.service.wallpaper.WallpaperService" />
@@ -114,46 +116,58 @@ jobs:
           cat << 'EOF' > app/src/main/res/xml/wallpaper.xml
           <?xml version="1.0" encoding="utf-8"?>
           <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+              android:description="@android:string/untitled"
               android:settingsActivity="com.enderscope.htmlwallpaper.MainActivity" />
           EOF
 
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+          <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#07090E"
-              android:fillViewport="true">
+              android:background="#000000">
+
+              <!-- Live 3D OpenGL Preview right inside the app background! -->
+              <FrameLayout
+                  android:id="@+id/previewContainer"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent" />
+
+              <!-- Bottom Control Panel -->
               <LinearLayout
+                  android:id="@+id/controlPanel"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
+                  android:layout_gravity="bottom"
                   android:orientation="vertical"
-                  android:padding="22dp"
-                  android:gravity="center">
+                  android:padding="20dp"
+                  android:background="#D90B0F19">
 
                   <TextView
-                      android:layout_width="wrap_content"
+                      android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:text="⚡ 3D GYRO V3 BYPASS"
+                      android:text="⚡ V5 LIVE 3D WALLPAPER STUDIO"
                       android:textColor="#38BDF8"
-                      android:textSize="21sp"
+                      android:textSize="18sp"
+                      android:gravity="center"
                       android:textStyle="bold" />
 
                   <TextView
                       android:id="@+id/tvStatus"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:text="Step 1: Load your generated .HTML file"
-                      android:textColor="#94A3B8"
+                      android:text="১. আপনার .HTML ফাইল লোড করুন (উপরে লাইভ ৩ডি দেখা যাবে)"
+                      android:textColor="#34D399"
+                      android:textSize="12sp"
                       android:gravity="center"
-                      android:layout_marginTop="6dp"
-                      android:layout_marginBottom="16dp" />
+                      android:layout_marginTop="4dp"
+                      android:layout_marginBottom="12dp" />
 
                   <Button
                       android:id="@+id/btnPickHtml"
                       android:layout_width="match_parent"
-                      android:layout_height="52dp"
-                      android:text="📂 1. Select Generated (.HTML) File"
+                      android:layout_height="48dp"
+                      android:text="📂 ১. Select (.HTML) Wallpaper File"
                       android:textAllCaps="false"
                       android:backgroundTint="#059669"
                       android:textColor="#FFFFFF"
@@ -163,26 +177,28 @@ jobs:
                       android:id="@+id/tvInt"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:text="🔥 3D Gyro Power: 180%"
+                      android:text="🔥 3D Gyro Power: 200%"
                       android:textColor="#E2E8F0"
-                      android:layout_marginTop="16dp"
+                      android:textSize="13sp"
+                      android:layout_marginTop="12dp"
                       android:textStyle="bold" />
 
                   <SeekBar
                       android:id="@+id/seekInt"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:max="280"
-                      android:progress="180"
+                      android:max="300"
+                      android:progress="200"
                       android:layout_marginTop="4dp" />
 
                   <TextView
                       android:id="@+id/tvZoom"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:text="🛡️ Edge Safe-Zoom: 1.15x"
+                      android:text="🛡️ Edge Safe-Zoom: 1.12x"
                       android:textColor="#E2E8F0"
-                      android:layout_marginTop="12dp"
+                      android:textSize="13sp"
+                      android:layout_marginTop="8dp"
                       android:textStyle="bold" />
 
                   <SeekBar
@@ -190,45 +206,36 @@ jobs:
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:max="35"
-                      android:progress="15"
+                      android:progress="12"
                       android:layout_marginTop="4dp" />
 
                   <Button
-                      android:id="@+id/btnLockEngine"
+                      android:id="@+id/btnSetWallpaper"
                       android:layout_width="match_parent"
-                      android:layout_height="56dp"
-                      android:layout_marginTop="20dp"
-                      android:text="🚀 2. Enable Direct LockScreen 3D (No Picker!)"
+                      android:layout_height="54dp"
+                      android:layout_marginTop="14dp"
+                      android:text="✅ ২. হোম ও লক-স্ক্রিনে ওয়ালপেপার সেট করুন"
                       android:textAllCaps="false"
                       android:backgroundTint="#0284C7"
                       android:textColor="#FFFFFF"
+                      android:textSize="15sp"
                       android:textStyle="bold" />
 
                   <Button
-                      android:id="@+id/btnPreviewNow"
+                      android:id="@+id/btnCopyAdb"
                       android:layout_width="match_parent"
-                      android:layout_height="50dp"
-                      android:layout_marginTop="10dp"
-                      android:text="👁️ Launch Fullscreen 3D Live Mode Now"
-                      android:textAllCaps="false"
-                      android:backgroundTint="#4F46E5"
-                      android:textColor="#FFFFFF"
-                      android:textStyle="bold" />
-
-                  <Button
-                      android:id="@+id/btnRootBind"
-                      android:layout_width="match_parent"
-                      android:layout_height="48dp"
-                      android:layout_marginTop="10dp"
-                      android:text="⚡ Try System / Root Wallpaper Bind"
+                      android:layout_height="44dp"
+                      android:layout_marginTop="8dp"
+                      android:text="📋 কাস্টম রম ADB Auto-Bind কমান্ড কপি করুন"
                       android:textAllCaps="false"
                       android:backgroundTint="#334155"
-                      android:textColor="#E2E8F0" />
+                      android:textColor="#E2E8F0"
+                      android:textSize="12sp" />
               </LinearLayout>
-          </ScrollView>
+          </FrameLayout>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/GyroGLView.java
+          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/GyroCoreRenderer.java
           package com.enderscope.htmlwallpaper;
 
           import android.content.Context;
@@ -236,10 +243,6 @@ jobs:
           import android.graphics.Bitmap;
           import android.graphics.BitmapFactory;
           import android.graphics.Color;
-          import android.hardware.Sensor;
-          import android.hardware.SensorEvent;
-          import android.hardware.SensorEventListener;
-          import android.hardware.SensorManager;
           import android.opengl.GLES20;
           import android.opengl.GLSurfaceView;
           import android.opengl.GLUtils;
@@ -250,66 +253,21 @@ jobs:
           import javax.microedition.khronos.egl.EGLConfig;
           import javax.microedition.khronos.opengles.GL10;
 
-          public class GyroGLView extends GLSurfaceView implements GLSurfaceView.Renderer, SensorEventListener {
+          public class GyroCoreRenderer implements GLSurfaceView.Renderer {
+              private final Context context;
               private final SharedPreferences prefs;
-              private final SensorManager sm;
-              private Sensor sensor;
-              private volatile float tx = 0f, ty = 0f;
+              public volatile float tx = 0f, ty = 0f;
               private float cx = 0f, cy = 0f;
-              private Float baseP = null, baseR = null;
               private int prog;
               private final int[] tex = new int[2];
               private int sw = 1080, sh = 1920;
               private float iw = 1080f, ih = 1920f;
               private long lastLoad = -1;
 
-              public GyroGLView(Context context) {
-                  super(context);
-                  prefs = context.getSharedPreferences("GyroPrefs", Context.MODE_PRIVATE);
-                  sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-                  if (sm != null) {
-                      sensor = sm.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
-                      if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-                      if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                  }
-                  setEGLContextClientVersion(2);
-                  setRenderer(this);
-                  setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+              public GyroCoreRenderer(Context ctx) {
+                  this.context = ctx;
+                  this.prefs = ctx.getSharedPreferences("GyroV5", Context.MODE_PRIVATE);
               }
-
-              public void startSensors() {
-                  baseP = null; baseR = null;
-                  if (sm != null && sensor != null) {
-                      sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
-                  }
-              }
-
-              public void stopSensors() {
-                  if (sm != null) sm.unregisterListener(this);
-              }
-
-              @Override
-              public void onSensorChanged(SensorEvent e) {
-                  float p, r;
-                  if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
-                      float[] rm = new float[9], ori = new float[3];
-                      SensorManager.getRotationMatrixFromVector(rm, e.values);
-                      SensorManager.getOrientation(rm, ori);
-                      p = (float) Math.toDegrees(ori[1]);
-                      r = (float) Math.toDegrees(ori[2]);
-                  } else {
-                      r = -e.values[0] * 7.5f;
-                      p = e.values[1] * 7.5f;
-                  }
-                  if (baseP == null) { baseP = p; baseR = r; }
-                  baseP += (p - baseP) * 0.0015f;
-                  baseR += (r - baseR) * 0.0015f;
-
-                  tx = Math.max(-1.4f, Math.min(1.4f, (r - baseR) / 10.0f));
-                  ty = -Math.max(-1.4f, Math.min(1.4f, (p - baseP) / 10.0f));
-              }
-
-              @Override public void onAccuracyChanged(Sensor s, int a) {}
 
               @Override
               public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -319,7 +277,7 @@ jobs:
                   String vs = "attribute vec2 aPos;varying vec2 vUv;void main(){vUv=aPos*0.5+0.5;vUv.y=1.0-vUv.y;gl_Position=vec4(aPos,0.0,1.0);}";
                   String fs = "precision highp float;varying vec2 vUv;uniform sampler2D uImg;uniform sampler2D uDep;uniform vec2 uOffset;uniform float uIntensity;uniform float uZoom;uniform vec2 uRes;uniform vec2 uImgRes;" +
                           "vec2 cover(vec2 uv,vec2 s,vec2 i,float z){float rs=s.x/max(1.0,s.y),ri=i.x/max(1.0,i.y);vec2 ns=rs<ri?vec2(i.x*s.y/i.y,s.y):vec2(s.x,i.y*s.x/i.x);vec2 o=(rs<ri?vec2((ns.x-s.x)/2.0,0.0):vec2(0.0,(ns.y-s.y)/2.0))/ns;return (uv*s/ns+o-0.5)/z+0.5;}" +
-                          "void main(){vec2 buv=cover(vUv,uRes,uImgRes,uZoom);const int S=22;float ss=1.0/float(S);vec2 duv=uOffset*uIntensity/float(S);vec2 cuv=buv-(uOffset*uIntensity*0.5);float h=1.0,d=texture2D(uDep,clamp(cuv,0.001,0.999)).r;" +
+                          "void main(){vec2 buv=cover(vUv,uRes,uImgRes,uZoom);const int S=24;float ss=1.0/float(S);vec2 duv=uOffset*uIntensity/float(S);vec2 cuv=buv-(uOffset*uIntensity*0.5);float h=1.0,d=texture2D(uDep,clamp(cuv,0.001,0.999)).r;" +
                           "for(int i=0;i<S;i++){if(h<=d)break;h-=ss;cuv+=duv;d=texture2D(uDep,clamp(cuv,0.001,0.999)).r;}" +
                           "vec2 puv=cuv-duv;float pd=texture2D(uDep,clamp(puv,0.001,0.999)).r-(h+ss);float cd=d-h;float w=cd/(cd-pd+0.0001);vec2 fuv=mix(cuv,puv,clamp(w,0.0,1.0));" +
                           "gl_FragColor=texture2D(uImg,clamp(fuv,0.001,0.999));}";
@@ -346,11 +304,11 @@ jobs:
                   long up = prefs.getLong("updated", 0);
                   if (up != lastLoad) { loadTex(); lastLoad = up; }
 
-                  cx += (tx - cx) * 0.15f;
-                  cy += (ty - cy) * 0.15f;
+                  cx += (tx - cx) * 0.16f;
+                  cy += (ty - cy) * 0.16f;
 
-                  float intensity = (prefs.getInt("power", 180) / 1000.0f);
-                  float zoom = 1.0f + (prefs.getInt("zoom", 15) / 100.0f);
+                  float intensity = (prefs.getInt("power", 200) / 1000.0f);
+                  float zoom = 1.0f + (prefs.getInt("zoom", 12) / 100.0f);
 
                   GLES20.glUseProgram(prog);
                   GLES20.glUniform2f(GLES20.glGetUniformLocation(prog, "uOffset"), cx, cy);
@@ -362,11 +320,11 @@ jobs:
               }
 
               private void loadTex() {
-                  File f1 = new File(getContext().getFilesDir(), "rgb.png");
-                  File f2 = new File(getContext().getFilesDir(), "depth.png");
+                  File f1 = new File(context.getFilesDir(), "rgb.png");
+                  File f2 = new File(context.getFilesDir(), "depth.png");
                   Bitmap b1 = f1.exists() ? BitmapFactory.decodeFile(f1.getAbsolutePath()) : Bitmap.createBitmap(10,10,Bitmap.Config.ARGB_8888);
                   Bitmap b2 = f2.exists() ? BitmapFactory.decodeFile(f2.getAbsolutePath()) : Bitmap.createBitmap(10,10,Bitmap.Config.ARGB_8888);
-                  if (!f1.exists()) { b1.eraseColor(Color.parseColor("#0284C7")); b2.eraseColor(Color.GRAY); }
+                  if (!f1.exists()) { b1.eraseColor(Color.parseColor("#0F172A")); b2.eraseColor(Color.GRAY); }
                   iw = b1.getWidth(); ih = b1.getHeight();
                   bind(b1, 0, "uImg"); bind(b2, 1, "uDep");
               }
@@ -384,144 +342,218 @@ jobs:
           }
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/DirectLockActivity.java
+          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/GyroGLView.java
           package com.enderscope.htmlwallpaper;
 
-          import android.app.Activity;
-          import android.os.Build;
-          import android.os.Bundle;
-          import android.view.GestureDetector;
-          import android.view.Gravity;
-          import android.view.MotionEvent;
-          import android.view.View;
-          import android.view.WindowManager;
-          import android.widget.FrameLayout;
-          import android.widget.TextClock;
-          import android.graphics.Color;
+          import android.content.Context;
+          import android.hardware.Sensor;
+          import android.hardware.SensorEvent;
+          import android.hardware.SensorEventListener;
+          import android.hardware.SensorManager;
+          import android.opengl.GLSurfaceView;
 
-          public class DirectLockActivity extends Activity {
-              private GyroGLView glView;
-              private GestureDetector gd;
+          public class GyroGLView extends GLSurfaceView implements SensorEventListener {
+              private final SensorManager sm;
+              private Sensor sensor;
+              private final GyroCoreRenderer renderer;
+              private Float baseP = null, baseR = null;
 
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                      setShowWhenLocked(true);
-                      setTurnScreenOn(true);
+              public GyroGLView(Context context) {
+                  super(context);
+                  sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+                  if (sm != null) {
+                      sensor = sm.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                      if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+                      if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                   }
-                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                          WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                          WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                  setEGLContextClientVersion(2);
+                  renderer = new GyroCoreRenderer(context);
+                  setRenderer(renderer);
+                  setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+              }
 
-                  FrameLayout root = new FrameLayout(this);
-                  glView = new GyroGLView(this);
-                  root.addView(glView);
+              public void startSensors() {
+                  baseP = null; baseR = null;
+                  if (sm != null && sensor != null) {
+                      sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+                  }
+              }
 
-                  TextClock clock = new TextClock(this);
-                  clock.setTextColor(Color.WHITE);
-                  clock.setTextSize(46f);
-                  clock.setShadowLayer(12f, 0f, 4f, Color.BLACK);
-                  FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                          FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-                  lp.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                  lp.topMargin = 140;
-                  root.addView(clock, lp);
-
-                  gd = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-                      @Override
-                      public boolean onFling(MotionEvent e1, MotionEvent e2, float vx, float vy) {
-                          if (e1 != null && e2 != null && (e1.getY() - e2.getY() > 180)) {
-                              finish();
-                              return true;
-                          }
-                          return false;
-                      }
-                      @Override
-                      public boolean onDoubleTap(MotionEvent e) {
-                          clock.setVisibility(clock.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-                          return true;
-                      }
-                  });
-
-                  setContentView(root);
+              public void stopSensors() {
+                  if (sm != null) sm.unregisterListener(this);
               }
 
               @Override
-              public boolean dispatchTouchEvent(MotionEvent ev) {
-                  gd.onTouchEvent(ev);
-                  return super.dispatchTouchEvent(ev);
+              public void onSensorChanged(SensorEvent e) {
+                  float p, r;
+                  if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
+                      float[] rm = new float[9], ori = new float[3];
+                      SensorManager.getRotationMatrixFromVector(rm, e.values);
+                      SensorManager.getOrientation(rm, ori);
+                      p = (float) Math.toDegrees(ori[1]);
+                      r = (float) Math.toDegrees(ori[2]);
+                  } else {
+                      r = -e.values[0] * 8.0f;
+                      p = e.values[1] * 8.0f;
+                  }
+                  if (baseP == null) { baseP = p; baseR = r; }
+                  baseP += (p - baseP) * 0.002f;
+                  baseR += (r - baseR) * 0.002f;
+
+                  renderer.tx = Math.max(-1.5f, Math.min(1.5f, (r - baseR) / 9.0f));
+                  renderer.ty = -Math.max(-1.5f, Math.min(1.5f, (p - baseP) / 9.0f));
               }
 
-              @Override
-              protected void onResume() {
-                  super.onResume();
-                  glView.onResume();
-                  glView.startSensors();
-              }
-
-              @Override
-              protected void onPause() {
-                  super.onPause();
-                  glView.stopSensors();
-                  glView.onPause();
-              }
+              @Override public void onAccuracyChanged(Sensor s, int a) {}
           }
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/LockGuardService.java
+          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/GyroWallpaperService.java
           package com.enderscope.htmlwallpaper;
 
-          import android.app.Notification;
-          import android.app.NotificationChannel;
-          import android.app.NotificationManager;
-          import android.app.Service;
-          import android.content.BroadcastReceiver;
           import android.content.Context;
-          import android.content.Intent;
-          import android.content.IntentFilter;
-          import android.os.Build;
-          import android.os.IBinder;
+          import android.hardware.Sensor;
+          import android.hardware.SensorEvent;
+          import android.hardware.SensorEventListener;
+          import android.hardware.SensorManager;
+          import android.opengl.EGL14;
+          import android.opengl.EGLConfig;
+          import android.opengl.EGLContext;
+          import android.opengl.EGLDisplay;
+          import android.opengl.EGLSurface;
+          import android.service.wallpaper.WallpaperService;
+          import android.view.SurfaceHolder;
 
-          public class LockGuardService extends Service {
-              private final BroadcastReceiver receiver = new BroadcastReceiver() {
+          public class GyroWallpaperService extends WallpaperService {
+              @Override
+              public Engine onCreateEngine() { return new RealOpenGLEngine(); }
+
+              private class RealOpenGLEngine extends Engine implements SensorEventListener {
+                  private SensorManager sm;
+                  private Sensor sensor;
+                  private GLRenderThread renderThread;
+                  private GyroCoreRenderer coreRenderer;
+                  private Float baseP = null, baseR = null;
+
                   @Override
-                  public void onReceive(Context context, Intent intent) {
-                      if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction()) ||
-                          Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-                          Intent i = new Intent(context, DirectLockActivity.class);
-                          i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                          context.startActivity(i);
+                  public void onCreate(SurfaceHolder holder) {
+                      super.onCreate(holder);
+                      coreRenderer = new GyroCoreRenderer(GyroWallpaperService.this);
+                      sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+                      if (sm != null) {
+                          sensor = sm.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                          if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+                          if (sensor == null) sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                       }
                   }
-              };
 
-              @Override
-              public void onCreate() {
-                  super.onCreate();
-                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                      NotificationChannel ch = new NotificationChannel("gyro_lock", "3D Gyro LockScreen", NotificationManager.IMPORTANCE_LOW);
-                      getSystemService(NotificationManager.class).createNotificationChannel(ch);
-                      Notification n = new Notification.Builder(this, "gyro_lock")
-                              .setContentTitle("3D Gyro LockScreen Active")
-                              .setContentText("Swipe up on lockscreen to unlock")
-                              .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
-                              .build();
-                      startForeground(101, n);
+                  @Override
+                  public void onSurfaceCreated(SurfaceHolder holder) {
+                      super.onSurfaceCreated(holder);
+                      renderThread = new GLRenderThread(holder, coreRenderer);
+                      renderThread.start();
                   }
-                  IntentFilter filter = new IntentFilter();
-                  filter.addAction(Intent.ACTION_SCREEN_OFF);
-                  filter.addAction(Intent.ACTION_SCREEN_ON);
-                  registerReceiver(receiver, filter);
+
+                  @Override
+                  public void onSurfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+                      super.onSurfaceChanged(holder, format, w, h);
+                      if (renderThread != null) renderThread.setSize(w, h);
+                  }
+
+                  @Override
+                  public void onVisibilityChanged(boolean visible) {
+                      super.onVisibilityChanged(visible);
+                      if (visible) {
+                          baseP = null; baseR = null;
+                          if (sm != null && sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+                          if (renderThread != null) renderThread.paused = false;
+                      } else {
+                          if (sm != null) sm.unregisterListener(this);
+                          if (renderThread != null) renderThread.paused = true;
+                      }
+                  }
+
+                  @Override
+                  public void onSurfaceDestroyed(SurfaceHolder holder) {
+                      super.onSurfaceDestroyed(holder);
+                      if (renderThread != null) {
+                          renderThread.running = false;
+                          renderThread.interrupt();
+                          renderThread = null;
+                      }
+                  }
+
+                  @Override
+                  public void onSensorChanged(SensorEvent e) {
+                      float p, r;
+                      if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
+                          float[] rm = new float[9], ori = new float[3];
+                          SensorManager.getRotationMatrixFromVector(rm, e.values);
+                          SensorManager.getOrientation(rm, ori);
+                          p = (float) Math.toDegrees(ori[1]);
+                          r = (float) Math.toDegrees(ori[2]);
+                      } else {
+                          r = -e.values[0] * 8.0f;
+                          p = e.values[1] * 8.0f;
+                      }
+                      if (baseP == null) { baseP = p; baseR = r; }
+                      baseP += (p - baseP) * 0.002f;
+                      baseR += (r - baseR) * 0.002f;
+
+                      coreRenderer.tx = Math.max(-1.5f, Math.min(1.5f, (r - baseR) / 9.0f));
+                      coreRenderer.ty = -Math.max(-1.5f, Math.min(1.5f, (p - baseP) / 9.0f));
+                  }
+
+                  @Override public void onAccuracyChanged(Sensor s, int a) {}
               }
 
-              @Override
-              public void onDestroy() {
-                  super.onDestroy();
-                  unregisterReceiver(receiver);
-              }
+              private static class GLRenderThread extends Thread {
+                  private final SurfaceHolder holder;
+                  private final GyroCoreRenderer renderer;
+                  volatile boolean running = true, paused = false;
+                  private int sw = 1080, sh = 1920;
+                  private boolean sizeChanged = true;
 
-              @Override public IBinder onBind(Intent intent) { return null; }
+                  GLRenderThread(SurfaceHolder h, GyroCoreRenderer r) {
+                      this.holder = h;
+                      this.renderer = r;
+                  }
+
+                  void setSize(int w, int h) {
+                      this.sw = w; this.sh = h;
+                      this.sizeChanged = true;
+                  }
+
+                  @Override
+                  public void run() {
+                      EGLDisplay dpy = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
+                      int[] v = new int[2];
+                      EGL14.eglInitialize(dpy, v, 0, v, 1);
+                      int[] attr = { EGL14.EGL_RED_SIZE,8, EGL14.EGL_GREEN_SIZE,8, EGL14.EGL_BLUE_SIZE,8, EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT, EGL14.EGL_NONE };
+                      EGLConfig[] cfg = new EGLConfig[1];
+                      int[] num = new int[1];
+                      EGL14.eglChooseConfig(dpy, attr, 0, cfg, 0, 1, num, 0);
+                      EGLContext ctx = EGL14.eglCreateContext(dpy, cfg[0], EGL14.EGL_NO_CONTEXT, new int[]{EGL14.EGL_CONTEXT_CLIENT_VERSION,2,EGL14.EGL_NONE}, 0);
+                      EGLSurface surf = EGL14.eglCreateWindowSurface(dpy, cfg[0], holder.getSurface(), new int[]{EGL14.EGL_NONE}, 0);
+                      EGL14.eglMakeCurrent(dpy, surf, surf, ctx);
+
+                      renderer.onSurfaceCreated(null, null);
+
+                      while (running) {
+                          if (paused) { try { Thread.sleep(80); } catch (Exception ignored) {} continue; }
+                          if (sizeChanged) {
+                              renderer.onSurfaceChanged(null, sw, sh);
+                              sizeChanged = false;
+                          }
+                          renderer.onDrawFrame(null);
+                          EGL14.eglSwapBuffers(dpy, surf);
+                          try { Thread.sleep(16); } catch (Exception ignored) {}
+                      }
+                      EGL14.eglDestroySurface(dpy, surf);
+                      EGL14.eglDestroyContext(dpy, ctx);
+                      EGL14.eglTerminate(dpy);
+                  }
+              }
           }
           EOF
 
@@ -529,7 +561,10 @@ jobs:
           package com.enderscope.htmlwallpaper;
 
           import android.app.WallpaperManager;
+          import android.content.ClipData;
+          import android.content.ClipboardManager;
           import android.content.ComponentName;
+          import android.content.Context;
           import android.content.Intent;
           import android.content.SharedPreferences;
           import android.graphics.Bitmap;
@@ -537,8 +572,8 @@ jobs:
           import android.net.Uri;
           import android.os.Build;
           import android.os.Bundle;
-          import android.provider.Settings;
           import android.util.Base64;
+          import android.widget.FrameLayout;
           import android.widget.SeekBar;
           import android.widget.TextView;
           import android.widget.Toast;
@@ -550,12 +585,16 @@ jobs:
           import java.io.FileOutputStream;
           import java.io.InputStream;
           import java.io.InputStreamReader;
+          import java.lang.reflect.Method;
+          import java.util.ArrayList;
+          import java.util.List;
           import java.util.regex.Matcher;
           import java.util.regex.Pattern;
 
           public class MainActivity extends AppCompatActivity {
               private TextView tvStatus, tvInt, tvZoom;
               private SharedPreferences prefs;
+              private GyroGLView previewGL;
 
               private final ActivityResultLauncher<String> htmlPicker =
                       registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -566,25 +605,34 @@ jobs:
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
                   setContentView(R.layout.activity_main);
+
                   tvStatus = findViewById(R.id.tvStatus);
                   tvInt = findViewById(R.id.tvInt);
                   tvZoom = findViewById(R.id.tvZoom);
-                  prefs = getSharedPreferences("GyroPrefs", MODE_PRIVATE);
+                  prefs = getSharedPreferences("GyroV5", MODE_PRIVATE);
+
+                  FrameLayout container = findViewById(R.id.previewContainer);
+                  previewGL = new GyroGLView(this);
+                  container.addView(previewGL);
 
                   SeekBar seekInt = findViewById(R.id.seekInt);
                   SeekBar seekZoom = findViewById(R.id.seekZoom);
 
-                  int savedInt = prefs.getInt("power", 180);
-                  int savedZoom = prefs.getInt("zoom", 15);
+                  int savedInt = prefs.getInt("power", 200);
+                  int savedZoom = prefs.getInt("zoom", 12);
                   seekInt.setProgress(savedInt);
                   seekZoom.setProgress(savedZoom);
                   tvInt.setText("🔥 3D Gyro Power: " + savedInt + "%");
                   tvZoom.setText(String.format("🛡️ Edge Safe-Zoom: %.2fx", 1.0f + (savedZoom / 100f)));
 
+                  if (new File(getFilesDir(), "rgb.png").exists()) {
+                      tvStatus.setText("✅ ৩ডি ওয়ালপেপার লোড করা আছে! ট্যাবলেট কাত করে উপরে প্রিভিউ দেখুন।");
+                  }
+
                   seekInt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                       @Override
                       public void onProgressChanged(SeekBar s, int p, boolean b) {
-                          int val = Math.max(15, p);
+                          int val = Math.max(40, p);
                           prefs.edit().putInt("power", val).apply();
                           tvInt.setText("🔥 3D Gyro Power: " + val + "%");
                       }
@@ -602,68 +650,115 @@ jobs:
                       @Override public void onStopTrackingTouch(SeekBar s) {}
                   });
 
-                  findViewById(R.id.btnPickHtml).setOnClickListener(v -> htmlPicker.launch("text/html"));
+                  findViewById(R.id.btnPickHtml).setOnClickListener(v -> htmlPicker.launch("*/*"));
 
-                  findViewById(R.id.btnLockEngine).setOnClickListener(v -> {
-                      if (!Settings.canDrawOverlays(this)) {
-                          Toast.makeText(this, "Grant 'Display over other apps' permission for Direct LockScreen!", Toast.LENGTH_LONG).show();
-                          startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())));
-                          return;
-                      }
-                      Intent svc = new Intent(this, LockGuardService.class);
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(svc);
-                      else startService(svc);
-                      Toast.makeText(this, "✅ Direct 3D LockScreen Active! Turn screen off & on to see it.", Toast.LENGTH_LONG).show();
-                      startActivity(new Intent(this, DirectLockActivity.class));
-                  });
+                  findViewById(R.id.btnSetWallpaper).setOnClickListener(v -> applyTrueSystemWallpaper());
 
-                  findViewById(R.id.btnPreviewNow).setOnClickListener(v -> {
-                      startActivity(new Intent(this, DirectLockActivity.class));
-                  });
-
-                  findViewById(R.id.btnRootBind).setOnClickListener(v -> {
-                      try {
-                          Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "service call wallpaper 1 s16 com.enderscope.htmlwallpaper s16 com.enderscope.htmlwallpaper.GyroWallpaperService"});
-                          p.waitFor();
-                          Toast.makeText(this, "Root bind signal sent!", Toast.LENGTH_SHORT).show();
-                      } catch (Exception e) {
-                          try {
-                              Intent i = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
-                              i.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                                      new ComponentName(this, GyroWallpaperService.class));
-                              startActivity(i);
-                          } catch (Exception ex) {
-                              Toast.makeText(this, "System Picker missing! Use Button 2 (Direct LockScreen 3D) above.", Toast.LENGTH_LONG).show();
-                          }
-                      }
+                  findViewById(R.id.btnCopyAdb).setOnClickListener(v -> {
+                      String cmd = "pm grant com.enderscope.htmlwallpaper android.permission.SET_WALLPAPER_COMPONENT";
+                      ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                      cb.setPrimaryClip(ClipData.newPlainText("adb", cmd));
+                      Toast.makeText(this, "✅ কমান্ড কপি হয়েছে! Bugjaeger-এ পেস্ট করে রান করলেই ১-ক্লিকে আসল ওয়ালপেপার সেট হবে!", Toast.LENGTH_LONG).show();
                   });
               }
 
+              private void applyTrueSystemWallpaper() {
+                  ComponentName cn = new ComponentName(this, GyroWallpaperService.class);
+                  WallpaperManager wm = WallpaperManager.getInstance(this);
+
+                  // Method 1: Direct Hidden API reflection (Works immediately if permission granted via ADB or System)
+                  try {
+                      Method m = WallpaperManager.class.getMethod("setWallpaperComponent", ComponentName.class);
+                      m.invoke(wm, cn);
+                      Toast.makeText(this, "🎉 সফলভাবে হোম ও লক-স্ক্রিনে ৩ডি লাইভ ওয়ালপেপার সেট হয়ে গেছে!", Toast.LENGTH_LONG).show();
+                      return;
+                  } catch (Exception ignored) {}
+
+                  try {
+                      Method m2 = WallpaperManager.class.getMethod("setWallpaperComponentWithFlags", ComponentName.class, int.class);
+                      m2.invoke(wm, cn, 3); // 1=System, 2=Lock, 3=Both
+                      Toast.makeText(this, "🎉 সফলভাবে হোম ও লক-স্ক্রিনে ৩ডি লাইভ ওয়ালপেপার সেট হয়ে গেছে!", Toast.LENGTH_LONG).show();
+                      return;
+                  } catch (Exception ignored) {}
+
+                  // Method 2: Root Shell auto-grant & bind
+                  try {
+                      Process p = Runtime.getRuntime().exec(new String[]{"su", "-c",
+                              "pm grant com.enderscope.htmlwallpaper android.permission.SET_WALLPAPER_COMPONENT"});
+                      p.waitFor();
+                      Method m = WallpaperManager.class.getMethod("setWallpaperComponent", ComponentName.class);
+                      m.invoke(wm, cn);
+                      Toast.makeText(this, "🎉 Root দিয়ে সফলভাবে ৩ডি ওয়ালপেপার সেট হয়েছে!", Toast.LENGTH_LONG).show();
+                      return;
+                  } catch (Exception ignored) {}
+
+                  // Method 3: Static High-Res Fallback + ADB Prompt
+                  try {
+                      File f1 = new File(getFilesDir(), "rgb.png");
+                      if (f1.exists()) {
+                          Bitmap bmp = BitmapFactory.decodeFile(f1.getAbsolutePath());
+                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                              wm.setBitmap(bmp, null, true, WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK);
+                          } else {
+                              wm.setBitmap(bmp);
+                          }
+                      }
+                  } catch (Exception ignored) {}
+
+                  Toast.makeText(this, "⚠️ সিস্টেম পিকার নেই! নিচের বাটন চেপে ADB কমান্ডটি Bugjaeger-এ একবার রান করলেই লাইভ ৩ডি আনলক হয়ে যাবে!", Toast.LENGTH_LONG).show();
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  if (previewGL != null) {
+                      previewGL.onResume();
+                      previewGL.startSensors();
+                  }
+              }
+
+              @Override
+              protected void onPause() {
+                  super.onPause();
+                  if (previewGL != null) {
+                      previewGL.stopSensors();
+                      previewGL.onPause();
+                  }
+              }
+
               private void extractHtmlWallpaper(Uri uri) {
-                  tvStatus.setText("Extracting 3D layers from .HTML...");
+                  tvStatus.setText("⏳ .HTML থেকে ৩ডি লেয়ার এক্সট্রাক্ট হচ্ছে...");
                   new Thread(() -> {
                       try {
                           InputStream is = getContentResolver().openInputStream(uri);
                           BufferedReader r = new BufferedReader(new InputStreamReader(is));
                           StringBuilder sb = new StringBuilder();
                           String line;
-                          while ((line = r.readLine()) != null) sb.append(line).append("\n");
+                          while ((line = r.readLine()) != null) sb.append(line).append("
+");
                           r.close();
                           String content = sb.toString();
 
-                          Bitmap rgb = decodeBase64Var(content, "IMG_SRC");
-                          Bitmap depth = decodeBase64Var(content, "DEPTH_SRC");
+                          // Universal Base64 image extractor (finds ANY base64 images inside the HTML)
+                          List<Bitmap> found = new ArrayList<>();
+                          Pattern p = Pattern.compile("data:image/[^;]+;base64,([A-Za-z0-9+/=\r\n]+)");
+                          Matcher m = p.matcher(content);
+                          while (m.find() && found.size() < 2) {
+                              byte[] b = Base64.decode(m.group(1).replaceAll("\s+", ""), Base64.DEFAULT);
+                              Bitmap decoded = BitmapFactory.decodeByteArray(b, 0, b.length);
+                              if (decoded != null) found.add(decoded);
+                          }
 
-                          if (rgb != null && depth != null) {
-                              savePng(rgb, "rgb.png");
-                              savePng(depth, "depth.png");
+                          if (found.size() >= 2) {
+                              savePng(found.get(0), "rgb.png");
+                              savePng(found.get(1), "depth.png");
                               prefs.edit().putLong("updated", System.currentTimeMillis()).apply();
                               runOnUiThread(() -> {
-                                  tvStatus.setText("✅ HTML Loaded! Click Button 2 to Activate.");
-                                  Toast.makeText(this, "3D HTML Wallpaper Ready!", Toast.LENGTH_SHORT).show();
+                                  tvStatus.setText("✅ ৩ডি লেয়ার লোড সম্পন্ন! ট্যাবলেট কাত করে উপরে লাইভ ৩ডি দেখুন!");
+                                  Toast.makeText(this, "3D Layers Loaded!", Toast.LENGTH_SHORT).show();
                               });
                           } else {
-                              runOnUiThread(() -> tvStatus.setText("❌ Invalid HTML file format."));
+                              runOnUiThread(() -> tvStatus.setText("❌ এই .HTML ফাইলে ২টি Base64 লেয়ার পাওয়া যায়নি।"));
                           }
                       } catch (Exception e) {
                           runOnUiThread(() -> tvStatus.setText("❌ Error: " + e.getMessage()));
@@ -671,40 +766,11 @@ jobs:
                   }).start();
               }
 
-              private Bitmap decodeBase64Var(String html, String key) {
-                  Pattern p = Pattern.compile(key + "\\s*=\\s*\"data:image/[^;]+;base64,([^\"]+)\"");
-                  Matcher m = p.matcher(html);
-                  if (m.find()) {
-                      byte[] b = Base64.decode(m.group(1), Base64.DEFAULT);
-                      return BitmapFactory.decodeByteArray(b, 0, b.length);
-                  }
-                  return null;
-              }
-
               private void savePng(Bitmap bmp, String name) throws Exception {
                   File f = new File(getFilesDir(), name);
                   FileOutputStream fos = new FileOutputStream(f);
                   bmp.compress(Bitmap.CompressFormat.PNG, 95, fos);
                   fos.close();
-              }
-          }
-          EOF
-
-          cat << 'EOF' > app/src/main/java/com/enderscope/htmlwallpaper/GyroWallpaperService.java
-          package com.enderscope.htmlwallpaper;
-
-          import android.service.wallpaper.WallpaperService;
-          import android.view.SurfaceHolder;
-
-          public class GyroWallpaperService extends WallpaperService {
-              @Override
-              public Engine onCreateEngine() { return new GyroEngine(); }
-
-              private class GyroEngine extends Engine {
-                  @Override
-                  public void onCreate(SurfaceHolder holder) {
-                      super.onCreate(holder);
-                  }
               }
           }
           EOF
@@ -720,11 +786,11 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Compile V3 Bypass APK
+      - name: Compile V5 True Wallpaper APK
         run: gradle assembleDebug --no-daemon
 
       - name: Upload Ready APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gyro-V3-NoPicker-Bypass-APK
+          name: Gyro-V5-TrueWallpaper-APK
           path: app/build/outputs/apk/debug/*.apk
